@@ -3,25 +3,28 @@ import axios from "axios";
 import { useState } from "react";
 import SearchBar from "./components/SearchBar/SearchBar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
-import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import Loader from "./components/Loader/Loader";
-import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 import GalleryModal from "./components/GalleryModal/GalleryModal";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
-
-function App() {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [page, setPage] = useState(1);
-  const [query, setQuery] = useState("");
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+import { Image } from "./types";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
+const App: React.FC = () => {
+  const [images, setImages] = useState<Image[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
+  const [query, setQuery] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const accessKey = "NjpiNKAPNXLDvfuVXswHy-cKv6CpEld4JB8HuFcP0DU";
 
-  const fetchImages = async (query, page = 1) => {
+  const fetchImages = async (
+    query: string,
+    page: number = 1
+  ): Promise<void> => {
     try {
       setError(false);
       setLoading(true);
@@ -33,7 +36,7 @@ function App() {
         `https://api.unsplash.com/search/photos?query=${query}&page=${page}&client_id=${accessKey}`
       );
 
-      const newImages = response.data.results;
+      const newImages: Image[] = response.data.results;
 
       if (newImages.length === 0) {
         if (page === 1) {
@@ -58,7 +61,7 @@ function App() {
     fetchImages(query, nextPage);
   };
 
-  const isOpen = (image) => {
+  const isOpen = (image: Image) => {
     setSelectedImage(image);
     setIsModalOpen(true);
   };
@@ -70,7 +73,7 @@ function App() {
 
   return (
     <div>
-      <SearchBar onSubmit={(userQuery) => fetchImages(userQuery, 1)} />
+      <SearchBar onSubmit={(userQuery: string) => fetchImages(userQuery, 1)} />
       {loading && <Loader />}
       {error ? (
         <ErrorMessage message="Error fetching images. Please try again." />
@@ -91,6 +94,6 @@ function App() {
       <Toaster />
     </div>
   );
-}
+};
 
 export default App;
